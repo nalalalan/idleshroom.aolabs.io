@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://idleshroom.aolabs.io/sitemap.xml

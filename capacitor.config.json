@@ -1,7 +1,7 @@
 {
   "appId": "io.aolabs.idleshroom",
   "appName": "Idle Shroom",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
     "androidScheme": "https"
   },

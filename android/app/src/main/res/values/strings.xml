@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Idle Shroom</string>
+    <string name="title_activity_main">Idle Shroom</string>
+    <string name="package_name">io.aolabs.idleshroom</string>
+    <string name="custom_url_scheme">io.aolabs.idleshroom</string>
+    <!-- Google sample ID for local test builds only. Replace with the real AdMob app ID before Play release. -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+</resources>

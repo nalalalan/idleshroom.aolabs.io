@@ -4,10 +4,13 @@
   "private": true,
   "description": "Original cute mushroom idle clicker game for web and future mobile packaging.",
   "scripts": {
+    "build:web": "node scripts/build-web.js",
     "serve": "npx http-server . -p 3033 -c-1",
-    "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
-    "cap:sync": "npx cap sync"
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npm run build:web && npx cap sync",
+    "android:open": "npm run cap:sync && npx cap open android",
+    "android:bundle": "npm run cap:sync && cd android && gradlew.bat bundleRelease"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",

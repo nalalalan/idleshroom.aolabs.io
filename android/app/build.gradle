@@ -3,6 +3,24 @@ apply plugin: 'com.android.application'
 android {
     namespace "io.aolabs.idleshroom"
     compileSdk rootProject.ext.compileSdkVersion
+
+    def releaseKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+    def releaseKeystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+    def releaseKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
+    def releaseKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+    def releaseSigningReady = releaseKeystorePath && releaseKeystorePassword && releaseKeyAlias && releaseKeyPassword
+
+    signingConfigs {
+        release {
+            if (releaseSigningReady) {
+                storeFile file(releaseKeystorePath)
+                storePassword releaseKeystorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "io.aolabs.idleshroom"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -18,6 +36,9 @@ android {
     }
     buildTypes {
         release {
+            if (releaseSigningReady) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

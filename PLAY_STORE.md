@@ -85,3 +85,14 @@ npm run android:bundle
 ```
 
 `npm run android:bundle` requires a local JDK and Android SDK. The current machine stops at `JAVA_HOME is not set and no 'java' command could be found in your PATH.`
+
+## GitHub Signing Secrets
+
+The Android bundle workflow can produce a signed Play upload when these repository secrets exist:
+
+- `ANDROID_KEYSTORE_BASE64`: base64-encoded upload key `.jks`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+Without those secrets, the workflow still proves the Android project builds, but the downloaded `.aab` is not a final Play upload artifact.

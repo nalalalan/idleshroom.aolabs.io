@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Install
         run: npm ci
@@ -55,4 +55,3 @@ jobs:
           name: idle-shroom-android-release-bundle
           path: android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
-

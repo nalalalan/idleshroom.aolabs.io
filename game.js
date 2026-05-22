@@ -10,6 +10,9 @@
   const rushSeconds = 20;
   const onlineConfig = window.MUSHROOM_BOOP_ONLINE || {};
   const testPlayMode = new URLSearchParams(window.location.search).has("testplay");
+  const publicGameUrl = window.location.hostname === "idleshroom.aolabs.io"
+    ? "https://idleshroom.aolabs.io/"
+    : "https://aolabs.io/idleshroom/";
   const environments = [
     { id: "sleeping-cap", name: "Sleeping Cap", biome: "morning" },
     { id: "dew-cap", name: "Dew Cap", biome: "morning" },
@@ -208,13 +211,13 @@
 
   const els = {};
   [
-    "loopsValue", "rateValue", "baseRateValue", "tapValue", "seedButton", "orchardVisual", "machineList",
+    "loopsValue", "rateValue", "tapValue", "nextGoalButton", "seedButton", "orchardVisual", "machineList",
     "comboBadge",
     "upgradeList", "rootstockValue", "prestigeHint", "prestigeProgress", "prestigeButton", "dailyReward",
     "dailyButton", "focusValue", "focusButton", "boostHint", "machineCount", "upgradeCount",
     "rushValue", "rushHint", "rushProgress", "questState", "questList",
     "perkCount", "perkList", "leaderboardState", "leaderboardList", "playerName", "submitScoreButton",
-    "achievementCount", "achievementList", "clicksValue", "runValue", "lifetimeValue",
+    "achievementCount", "achievementList", "clicksValue", "runValue", "lifetimeValue", "seasonValue",
     "multiplierValue", "sessionMeadowValue", "shareButton", "exportButton", "importButton", "saveDialog",
     "saveText", "dialogTitle", "dialogHelp", "copySaveButton", "loadSaveButton", "saveState",
     "bottomTabs", "friendScene", "companionRow", "rushOrbit", "rootRing", "soundButton",
@@ -491,12 +494,11 @@
 
   function nextAction(target = state) {
     const tutorial = tutorialStage(target);
+    const earlyPiece = [...machines].reverse().find(machine => Number(target.loops || 0) >= machineCost(machine, target));
+    const earlyCharm = upgrades.find(upgrade => !hasUpgrade(upgrade.id, target) && upgrade.req(target) && Number(target.loops || 0) >= upgrade.cost);
+    const earlyPerk = perks.find(perk => perkLevel(perk.id, target) < perk.max && Number(target.rootstock || 0) >= perkCost(perk, target));
     if (tutorial.id !== "forest") {
-      return { detail: tutorial.next, kind: "tap", ready: false };
-    }
-
-    if (target.lastDaily !== todayKey()) {
-      return { detail: "daily dew ready", kind: "dew", ready: true };
+      if (!earlyPiece && !earlyCharm && !earlyPerk) return { detail: tutorial.next, kind: "tap", ready: false };
     }
 
     const bloomGain = bloomGainFor(target);
@@ -504,14 +506,23 @@
       return { detail: `Great Bloom ready +${format(bloomGain)}`, kind: "bloom", ready: true };
     }
 
-    const affordableCharm = upgrades.find(upgrade => !hasUpgrade(upgrade.id, target) && upgrade.req(target) && Number(target.loops || 0) >= upgrade.cost);
+    const affordablePerk = earlyPerk || perks.find(perk => perkLevel(perk.id, target) < perk.max && Number(target.rootstock || 0) >= perkCost(perk, target));
+    if (affordablePerk) {
+      return { detail: `unlock ${affordablePerk.name}`, kind: "perk", ready: true };
+    }
+
+    const affordableCharm = earlyCharm || upgrades.find(upgrade => !hasUpgrade(upgrade.id, target) && upgrade.req(target) && Number(target.loops || 0) >= upgrade.cost);
     if (affordableCharm) {
       return { detail: `wake ${affordableCharm.name}`, kind: "charm", ready: true };
     }
 
-    const affordablePiece = [...machines].reverse().find(machine => Number(target.loops || 0) >= machineCost(machine, target));
+    const affordablePiece = earlyPiece || [...machines].reverse().find(machine => Number(target.loops || 0) >= machineCost(machine, target));
     if (affordablePiece) {
       return { detail: `grow ${affordablePiece.name}`, kind: "piece", ready: true };
+    }
+
+    if (target.lastDaily !== todayKey() && ownedTotal(target) > 0) {
+      return { detail: "daily dew ready", kind: "dew", ready: true };
     }
 
     const nextMilestone = nextClickMilestone(target);
@@ -528,6 +539,94 @@
     }
 
     return { detail: `${format(bloomNeed)} run spores to Great Bloom`, kind: "bloom", ready: false };
+  }
+
+  function compactGoalLabel(detail) {
+    const text = String(detail || "");
+    return text.replace(/^(\d+(?:\.\d+)?[KMBT]?) taps to .+$/i, "$1 taps");
+  }
+
+  function primaryGoal(target = state) {
+    const tutorial = tutorialStage(target);
+    const earlyPiece = [...machines].reverse().find(machine => Number(target.loops || 0) >= machineCost(machine, target));
+    const earlyCharm = upgrades.find(upgrade => !hasUpgrade(upgrade.id, target) && upgrade.req(target) && Number(target.loops || 0) >= upgrade.cost);
+    const earlyPerk = perks.find(perk => perkLevel(perk.id, target) < perk.max && Number(target.rootstock || 0) >= perkCost(perk, target));
+    if (tutorial.id !== "forest") {
+      if (!earlyPiece && !earlyCharm && !earlyPerk) return { label: compactGoalLabel(tutorial.next), detail: tutorial.next, kind: "tap", ready: false };
+    }
+
+    const bloomGain = bloomGainFor(target);
+    if (bloomGain > 0) {
+      return {
+        label: `Bloom +${format(bloomGain)}`,
+        detail: `Great Bloom for ${format(bloomGain)} mycelium`,
+        kind: "bloom",
+        ready: true
+      };
+    }
+
+    const affordablePerk = earlyPerk || perks.find(perk => perkLevel(perk.id, target) < perk.max && Number(target.rootstock || 0) >= perkCost(perk, target));
+    if (affordablePerk) {
+      return {
+        label: affordablePerk.name,
+        detail: affordablePerk.desc,
+        kind: "perk",
+        id: affordablePerk.id,
+        ready: true
+      };
+    }
+
+    const affordableCharm = earlyCharm || upgrades.find(upgrade => !hasUpgrade(upgrade.id, target) && upgrade.req(target) && Number(target.loops || 0) >= upgrade.cost);
+    if (affordableCharm) {
+      return {
+        label: `Wake ${affordableCharm.name}`,
+        detail: affordableCharm.desc,
+        kind: "charm",
+        id: affordableCharm.id,
+        ready: true
+      };
+    }
+
+    const affordablePiece = earlyPiece || [...machines].reverse().find(machine => Number(target.loops || 0) >= machineCost(machine, target));
+    if (affordablePiece) {
+      return {
+        label: `Grow ${affordablePiece.name}`,
+        detail: `Adds +${format(affordablePiece.rate * rateMultiplier(target))}/sec`,
+        kind: "piece",
+        id: affordablePiece.id,
+        ready: true
+      };
+    }
+
+    if (target.lastDaily !== todayKey() && ownedTotal(target) > 0) {
+      return { label: "Claim daily dew", detail: "Daily reward ready", kind: "dew", ready: true };
+    }
+
+    const nextPiece = machines.find(machine => Number(target.loops || 0) < machineCost(machine, target));
+    if (nextPiece) {
+      const needed = Math.max(0, machineCost(nextPiece, target) - Number(target.loops || 0));
+      return {
+        label: `${format(needed)} to ${nextPiece.name}`,
+        detail: `Next growth: ${nextPiece.name}`,
+        kind: "piece",
+        id: nextPiece.id,
+        ready: false
+      };
+    }
+
+    const action = nextAction(target);
+    return { label: action.detail, detail: action.detail, kind: action.kind, ready: action.ready };
+  }
+
+  function usePrimaryGoal() {
+    const goal = primaryGoal();
+    if (!goal.ready) return;
+    if (goal.kind === "bloom") graft();
+    if (goal.kind === "perk" && goal.id) buyPerk(goal.id);
+    if (goal.kind === "charm" && goal.id) buyUpgrade(goal.id);
+    if (goal.kind === "piece" && goal.id) buyMachine(goal.id);
+    if (goal.kind === "dew") claimDaily();
+    render();
   }
 
   function actionMomentTitle(action) {
@@ -761,7 +860,7 @@
     }
     clickRateBurst = 0;
     playTone("great");
-    showMoment("Great Bloom", `+${format(gain)} mycelium`, "great");
+    showMoment("Great Bloom", `+${format(gain)} mycelium / season ${format(state.bloomCount + 1)}`, "great");
     if (navigator.vibrate) navigator.vibrate([18, 22, 18, 36]);
     markDirty();
     checkAchievements();
@@ -873,9 +972,7 @@
     state.focusUntil = now + boostMinutes * 60 * 1000;
     addRushCharge(35);
     displayedRate = Math.max(displayedRate, incomePerSecond());
-    els.boostHint.textContent = result.demo
-      ? "Demo Spore Shower active. Configure rewarded AdMob IDs before App Store release."
-      : "Spore Shower active.";
+    els.boostHint.textContent = "Spore Shower active.";
     playTone("shower");
     showMoment("Spore Shower", `${Math.round(boostMinutes)} minute boost`, "shower");
     markDirty();
@@ -1476,10 +1573,10 @@
   }
 
   async function shareScore() {
-    const text = `I grew ${format(state.lifetimeLoops)} lifetime spores in Idle Shroom. Play at https://idleshroom.aolabs.io/`;
+    const text = `I grew ${format(state.lifetimeLoops)} lifetime spores in Idle Shroom. Play at ${publicGameUrl}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Idle Shroom", text, url: "https://idleshroom.aolabs.io/" });
+        await navigator.share({ title: "Idle Shroom", text, url: publicGameUrl });
         return;
       } catch {
         /* fall through to clipboard */
@@ -1811,6 +1908,9 @@
   function renderFocus() {
     const remaining = Math.max(0, Number(state.focusUntil || 0) - Date.now());
     els.focusValue.textContent = remaining > 0 ? `${Math.ceil(remaining / 60000)}m left` : "inactive";
+    els.boostHint.textContent = remaining > 0
+      ? `${format(5 + perkLevel("long-boost") * 1)}x spores/sec while the shower is open.`
+      : "Call a 10 minute Spore Shower for a short growth burst.";
     els.focusButton.disabled = remaining > 0;
     els.focusButton.textContent = remaining > 0 ? "shower active" : "call shower";
     if (els.boostSkillButton) {
@@ -1906,12 +2006,23 @@
   function renderCore() {
     const passiveRate = incomePerSecond();
     const tapBurst = visibleTapBurst();
+    const goal = primaryGoal();
     els.loopsValue.textContent = format(state.loops);
     els.rateValue.textContent = format(passiveRate);
-    els.baseRateValue.textContent = passiveRate > 0
-      ? (tapBurst > 0.1 ? `tap burst +${format(tapBurst)}` : "passive garden")
-      : "buy roots";
+    if (els.nextGoalButton) {
+      els.nextGoalButton.textContent = goal.label;
+      els.nextGoalButton.disabled = !goal.ready;
+      els.nextGoalButton.title = goal.detail;
+      els.nextGoalButton.dataset.goalKind = goal.kind;
+      els.nextGoalButton.dataset.ready = goal.ready ? "true" : "false";
+      els.nextGoalButton.dataset.rate = passiveRate > 0 && tapBurst > 0.1 ? "burst" : passiveRate > 0 ? "idle" : "none";
+    }
     els.tapValue.textContent = format(state.clicks);
+    if (els.seasonValue) {
+      els.seasonValue.textContent = Number(state.rootstock || 0) > 0
+        ? `${format(state.rootstock)} mycelium`
+        : `season ${format(Number(state.bloomCount || 0) + 1)}`;
+    }
     els.clicksValue.textContent = format(state.clicks);
     els.runValue.textContent = format(state.totalLoops);
     els.lifetimeValue.textContent = format(state.lifetimeLoops);
@@ -1987,6 +2098,7 @@
     if (id) claimQuest(id);
   });
   els.prestigeButton.addEventListener("click", graft);
+  if (els.nextGoalButton) els.nextGoalButton.addEventListener("click", usePrimaryGoal);
   els.dailyButton.addEventListener("click", claimDaily);
   els.focusButton.addEventListener("click", useFocus);
   els.dewSkillButton.addEventListener("click", claimDaily);

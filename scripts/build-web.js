@@ -22,7 +22,7 @@ const files = [
   "suite-header.css"
 ];
 
-const dirs = ["icons", "marks"];
+const dirs = ["icons", "marks", "sprites"];
 
 function copyFile(relativePath) {
   const src = path.join(root, relativePath);
@@ -45,4 +45,3 @@ files.forEach(copyFile);
 dirs.forEach(copyDir);
 
 console.log(`Built Idle Shroom web assets into ${out}`);
-

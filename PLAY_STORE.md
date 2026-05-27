@@ -16,28 +16,29 @@ Current Play status: Android packaging is prepared from the standalone `idleshro
 
 Short description:
 
-Tap a tiny mushroom, grow cozy forests, unlock beautiful meadows, and bloom forever.
+Tap enemies, grow shroom allies, mutate your colony, and Spore Bloom stronger.
 
 Full description:
 
-Idle Shroom is a cute mushroom idle clicker about waking a quiet fly agaric and growing a soft forest around it.
+Idle Shroom is a cozy-dark mushroom idle clicker RPG about starting as the First Shroom and growing a living fungal colony around it.
 
-Tap for spores, unlock garden friends, discover new environments, earn permanent mycelium perks, and climb the atlas leaderboard. The game keeps changing as you play: new meadow names, new art moods, new tap milestones, late-game garden pieces, and Great Bloom resets that make the next season stronger.
+Tap enemies for Nutrients, grow shroom allies, defeat oversized forest threats, upgrade relics, unlock mutation paths, and climb the spore record. The game keeps changing as you play: new zones, richer colony art, ally milestones, boss walls, and Spore Bloom resets that make the next run stronger.
 
 Idle Shroom is designed for quick check-ins and long idle sessions:
 
-- Tap the mushroom for spore bursts.
-- Grow roots, dew cups, lantern caps, burrows, choirs, observatories, and ancient groves.
-- Unlock 64 hand-drawn meadow environments.
-- Great Bloom to reset with permanent perks.
+- Tap enemies for spore bursts.
+- Grow Button Buddies, Cap Knights, Puffball Bombers, Glowshroom Mages, Truffle Miners, and ancient fungal allies.
+- Push through forest, log, cavern, swamp, ruin, and deep mycelium zones.
+- Upgrade relics with Relic Caps and activate mutations with Mutation Goo.
+- Spore Bloom to reset with permanent Ancient Spores.
 - Submit your run to the leaderboard.
-- Watch optional rewarded ads for temporary Spore Shower boosts after ads are configured.
+- Watch optional rewarded ads for temporary Nutrient Frenzy boosts after ads are configured.
 
 No account is required. Progress is saved on your device.
 
 ## First Release Notes
 
-Idle Shroom launches with the full cozy clicker loop: spores, garden upgrades, charms, daily dew, Spore Shower boosts, achievements, Great Bloom resets, a leaderboard, 64 meadow environments, and long-play milestones through 100,000 taps.
+Idle Shroom launches with the full cozy-dark clicker loop: tap combat, Nutrients, shroom allies, active skills, daily goals, relic upgrades, mutation paths, Spore Bloom prestige, offline progress, and long-play milestones through absurd scaling numbers.
 
 ## Required Play Console Steps
 
@@ -55,7 +56,7 @@ Monetization ads:
 - Use AdMob for Android in-app ads.
 - Native rewarded ads are wired through `MushroomBoopRewardedAdPlugin`.
 - Keep banner ads optional and low-pressure; do not add automatic interstitials to the tap loop.
-- Use rewarded ads for the Spore Shower boost only after the user taps the boost button.
+- Use rewarded ads for the Nutrient Frenzy boost only after the user taps the boost button.
 - Use Google test IDs during development only.
 - Replace `android/app/src/main/res/values/strings.xml` `admob_app_id` and `ads-config.js` `admob.androidAppId` / `admob.rewardedUnitId` with real AdMob IDs only after the app exists in AdMob and Play Console.
 - Leave `ads-config.js` blank for public web until AdSense/AdMob approvals exist.

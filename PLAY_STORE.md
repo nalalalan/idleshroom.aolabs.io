@@ -22,7 +22,7 @@ Full description:
 
 Idle Shroom is a cozy-dark mushroom idle clicker RPG about starting as the First Shroom and growing a living fungal colony around it.
 
-Tap enemies for Nutrients, grow shroom allies, defeat oversized forest threats, upgrade relics, unlock mutation paths, and climb the spore record. The game keeps changing as you play: new zones, richer colony art, ally milestones, boss walls, and Spore Bloom resets that make the next run stronger.
+Tap enemies for Nutrients, grow shroom allies, catch rare spawns, defeat oversized forest threats, upgrade relics, unlock mutation paths, and climb the spore record. The game keeps changing as you play: new zones, richer colony art, ally milestones, boss walls, and Spore Bloom resets that make the next run stronger.
 
 Idle Shroom is designed for quick check-ins and long idle sessions:
 
@@ -38,7 +38,7 @@ No account is required. Progress is saved on your device.
 
 ## First Release Notes
 
-Idle Shroom launches with the full cozy-dark clicker loop: tap combat, Nutrients, shroom allies, active skills, daily goals, relic upgrades, mutation paths, Spore Bloom prestige, offline progress, and long-play milestones through absurd scaling numbers.
+Idle Shroom launches with the full cozy-dark clicker loop: tap combat, Nutrients, shroom allies, active skills, rare spawns, daily goals, relic upgrades, mutation paths, Spore Bloom prestige, offline progress, and long-play milestones through absurd scaling numbers.
 
 ## Required Play Console Steps
 

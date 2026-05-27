@@ -2,7 +2,7 @@
   "name": "idleshroom",
   "version": "0.1.0",
   "private": true,
-  "description": "Original cute mushroom idle clicker game for web and future mobile packaging.",
+  "description": "Cozy-dark mushroom tap RPG for web and mobile packaging.",
   "scripts": {
     "build:web": "node scripts/build-web.js",
     "serve": "npx http-server . -p 3033 -c-1",

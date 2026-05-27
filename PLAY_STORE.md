@@ -1,6 +1,6 @@
 # Idle Shroom Google Play Launch
 
-Current Play status: Android packaging is prepared from the standalone `idleshroom.aolabs.io` repo. Production release is blocked until the Play Console app, signing, review forms, screenshots, AdMob IDs, and ad-spend approval exist.
+Current Play status: Android packaging builds from the standalone `idleshroom.aolabs.io` repo. Local debug install and unsigned release bundle artifacts exist. Production release is blocked until Play upload signing, the Play Console app, review forms, screenshots, AdMob IDs, and ad-spend approval exist.
 
 ## App Identity
 
@@ -69,8 +69,7 @@ Acquisition ads:
 
 ## Current Blockers
 
-- No local Java/Android SDK on this Windows machine, so a release `.aab` cannot be built here yet.
-- No Android upload signing key has been created or stored.
+- No Android upload signing key has been created or stored, so the local release `.aab` is not a Play upload artifact.
 - No Play Console access in this Codex session.
 - No AdMob app ID or ad unit IDs configured.
 - No Google Ads billing/budget approval.
@@ -85,7 +84,12 @@ npx cap sync android
 npm run android:bundle
 ```
 
-`npm run android:bundle` requires a local JDK and Android SDK. The current machine stops at `JAVA_HOME is not set and no 'java' command could be found in your PATH.`
+Local build artifacts from this pass:
+
+- Debug APK: `android/app/build/outputs/apk/debug/app-debug.apk`
+- Release bundle: `android/app/build/outputs/bundle/release/app-release.aab`
+
+`app-release.aab` is unsigned unless `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` are set before `gradlew.bat bundleRelease`.
 
 ## GitHub Signing Secrets
 
